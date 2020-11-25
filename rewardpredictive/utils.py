@@ -162,6 +162,8 @@ class SFLearning(rl.agent.Agent):
         self._error_avg = 0.
         self._step_cnt = 0
 
+        self._outer_array = None
+
     def reset(self, reset_sf=True, reset_w=True):
         if reset_sf:
             self._sf = np.array(self._init_sf_mat, copy=True)
@@ -182,7 +184,12 @@ class SFLearning(rl.agent.Agent):
 
         sf_target = phi + (1. - term) * self._gamma * np.matmul(phi_next, self._sf)
         sf_error = sf_target - np.matmul(phi, self._sf)
-        self._sf = self._sf + self._lr_sf * np.outer(phi, sf_error)
+        if self._outer_array is None:
+            self._outer_array = np.outer(phi, sf_error)
+        else:
+            self._outer_array = np.outer(phi, sf_error, self._outer_array)
+
+        self._sf = self._sf + self._lr_sf * self._outer_array
 
         r_error = reward - np.dot(self._w, phi)
         self._w = self._w + self._lr_r * r_error * phi
