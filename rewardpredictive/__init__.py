@@ -12,12 +12,6 @@ from . import utils
 from . import simulate
 
 # from .significant_experiment import construct_experiment_set_by_name
-from .experiment import SmallTaskSequenceName
-from .experiment import ExperimentSetTaskSequenceRewardChangeQLearning
-from .experiment import ExperimentSetTaskSequenceRewardChangeQTransfer
-from .experiment import ExperimentSetTaskSequenceRewardChangeSFLearning
-from .experiment import ExperimentSetTaskSequenceRewardChangeSFTransfer
-from .experiment import ExperimentSetTaskSequenceRewardChangeSFTransferAll
 
 from .experiment import ExperimentSetTaskSequenceRandomRewardChangeQLearning
 from .experiment import ExperimentSetTaskSequenceRandomRewardChangeQTransfer
