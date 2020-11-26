@@ -233,15 +233,6 @@ class SFLearning(rl.agent.Agent):
         return self._error_avg
 
 
-class ConstantEpsSchedule(rl.schedule.VariableSchedule):
-    def __init__(self, epsilon=0.1):
-        super(ConstantEpsSchedule, self).__init__()
-        self.epsilon = epsilon
-
-    def __call__(self, *args, **kwargs):
-        return self.epsilon
-
-
 def cluster_idx_to_phi_mat(cluster_idx):
     num_states = len(cluster_idx)
     num_cluster = len(np.unique(cluster_idx))
