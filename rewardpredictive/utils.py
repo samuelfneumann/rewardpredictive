@@ -4,6 +4,8 @@
 # This source code is licensed under an MIT license found in the LICENSE file in the root directory of this project.
 #
 from itertools import product
+from tqdm import trange
+import rewardpredictive as rp
 
 import numpy as np
 import rlutils as rl
@@ -16,8 +18,14 @@ def set_seeds(seed):
 
 
 def simulate_episodes(task, policy, transition_listener, num_episodes, max_steps=2000):
-    for i in range(num_episodes):
-        rl.data.simulate_gracefully(task, policy, transition_listener, max_steps=max_steps)
+    avg = 0
+    pbar = trange(num_episodes)
+    for i in pbar:
+        ep_steps = rp.simulate.simulate_gracefully(task, policy, transition_listener, max_steps=max_steps)
+        if ep_steps is None:
+            continue
+        avg += (ep_steps - avg) / (i + 2)
+        pbar.set_description(f"Average number of steps: {avg}")
 
 
 def pad_list_of_list_to_ndarray(ar, pad_value=np.nan, dtype=np.float32, row_length=0):
@@ -184,10 +192,10 @@ class SFLearning(rl.agent.Agent):
 
         sf_target = phi + (1. - term) * self._gamma * np.matmul(phi_next, self._sf)
         sf_error = sf_target - np.matmul(phi, self._sf)
-        if self._outer_array is None:
-            self._outer_array = np.outer(phi, sf_error)
-        else:
-            self._outer_array = np.outer(phi, sf_error, self._outer_array)
+        # if self._outer_array is None:
+        self._outer_array = np.outer(phi, sf_error)
+        # else:
+        #     self._outer_array = np.outer(phi, sf_error, self._outer_array)
 
         self._sf = self._sf + self._lr_sf * self._outer_array
 
