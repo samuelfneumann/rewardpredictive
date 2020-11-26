@@ -505,8 +505,8 @@ RANDOM 10x10 GRIDWORLD EXPERIMENTS BELOW
 """
 
 
-class ExperimentTaskSequenceRandomRewardChange(ExperimentHParamParallel):
-    # class ExperimentTaskSequenceRandomRewardChange(ExperimentHParam):
+# class ExperimentTaskSequenceRandomRewardChange(ExperimentHParamParallel):
+class ExperimentTaskSequenceRandomRewardChange(ExperimentHParam):
 
     HP_EXPLORATION = 'exploration'
     HP_TASK_SEQUENCE = 'task_sequence'
@@ -567,12 +567,13 @@ class ExperimentTaskSequenceRandomRewardChange(ExperimentHParamParallel):
             policy = rl.policy.GreedyPolicy(agent)
             transition_listener = rl.data.transition_listener(agent, ep_len_logger)
         elif self.hparam[ExperimentTaskSequenceRewardChange.HP_EXPLORATION] == 'egreedy':
-            policy = rl.policy.EGreedyPolicy(agent, 1.0)
-            exp_schedule = rl.schedule.LinearInterpolatedVariableSchedule([0, 180], [1., 0.])
+            policy = rl.policy.EGreedyPolicy(agent, 0.1)
+            exp_schedule = rl.schedule.LinearInterpolatedVariableSchedule([0, 180], [0.1, 0.1])
             exp_schedule_listener = EGreedyScheduleUpdate(policy, exp_schedule)
             transition_listener = rl.data.transition_listener(agent, exp_schedule_listener, ep_len_logger)
-        for task in tqdm(self.task_sequence):
-            simulate_episodes(task, policy, transition_listener, episodes, max_steps=2000)
+        # for task in tqdm(self.task_sequence):
+        for task in self.task_sequence:
+            simulate_episodes(task, policy, transition_listener, episodes, max_steps=1000)
             self._reset_agent(agent)
 
         res_dict = {

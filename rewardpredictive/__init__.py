@@ -9,6 +9,7 @@ from . import experiment
 from . import mdp
 from . import plot
 from . import utils
+from . import simulate
 
 # from .significant_experiment import construct_experiment_set_by_name
 from .experiment import SmallTaskSequenceName
