@@ -51,4 +51,4 @@ from .plot import plot_alpha_vs_total_reward
 from .utils import set_seeds
 
 def construct_experiment_set_by_name(experiment_set_name, **kwargs):
-    return globals()[experiment_set_name].construct(**kwargs)
+    return globals()[experiment_set_name.strip()].construct(**kwargs)
