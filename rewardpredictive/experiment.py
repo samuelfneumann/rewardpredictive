@@ -338,8 +338,9 @@ class ExperimentSetTaskSequenceRandomRewardChange(ExperimentSet):
 
     @classmethod
     def get_lr_dict(cls):
-        learning_rates = {"q_learning_rates": None, "sf_learning_rates": None,
-                          "r_learning_rates": None}
+        learning_rates = {"q_learning_rates": [0.1],
+                          "sf_learning_rates": [0.1],
+                          "r_learning_rates": [0.1]}
         with open(CONFIG_FILE) as config:
             hparam = json.loads(config.read())
             # return hparam["experiment_set"]["learning_rates"]
