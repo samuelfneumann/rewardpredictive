@@ -57,7 +57,7 @@ class ExperimentHParam(rl.Experiment):
         self.hparam = self._add_defaults_to_hparam(hparam)
         self._load_config(CONFIG_FILE)
         self.results = {}
-        self.save_dir = self._get_save_dir(self.hparam, base_dir)
+        # self.save_dir = self._get_save_dir(self.hparam, base_dir)
 
     def _load_config(self, file):
         with open(file) as hparam_file:
@@ -201,7 +201,7 @@ class ExperimentTaskSequenceRandomRewardChange(ExperimentHParam):
     HP_EPSILON = "epsilon"
     HP_GAMMA = "gamma"
 
-    def __init__(self, *params, num_tasks=10, **kwargs):
+    def __init__(self, *params, num_tasks=10, base_dir="./data", **kwargs):
 
         """
         Experiment task sequence for our random reward change experiments.
@@ -217,6 +217,7 @@ class ExperimentTaskSequenceRandomRewardChange(ExperimentHParam):
         self.num_tasks = num_tasks
         self.task_sequence = self._get_task_sequence()
         self.num_actions = self.task_sequence[0].action_space.n
+        self.save_dir = self._get_save_dir(self.hparam, base_dir)
 
     def get_default_hparam(self) -> dict:
         defaults = super().get_default_hparam()
