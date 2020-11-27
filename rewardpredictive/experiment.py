@@ -296,13 +296,14 @@ class ExperimentTaskSequenceRandomRewardChangeQLearning(ExperimentTaskSequenceRa
         return defaults
 
     def _construct_agent(self):
+        states = self.hparam[ExperimentHParam.HP_MDP_SIZE] ** 2
         if self.hparam[ExperimentTaskSequenceRandomRewardChange.HP_EXPLORATION] == 'optimistic':
-            q_vals = np.ones([4, 100], dtype=np.float32)
+            q_vals = np.ones([4, states], dtype=np.float32)
         elif self.hparam[ExperimentTaskSequenceRandomRewardChange.HP_EXPLORATION] == 'egreedy':
-            q_vals = np.zeros([4, 100], dtype=np.float32)
+            q_vals = np.zeros([4, states], dtype=np.float32)
         lr = self.hparam[ExperimentTaskSequenceRandomRewardChangeQLearning.HP_LEARNING_RATE]
         gamma = self.hparam[ExperimentTaskSequenceRandomRewardChange.HP_GAMMA]
-        return rl.agent.QLearning(num_states=100, num_actions=4, learning_rate=lr, gamma=gamma, init_Q=q_vals)
+        return rl.agent.QLearning(num_states=states, num_actions=4, learning_rate=lr, gamma=gamma, init_Q=q_vals)
 
     def _reset_agent(self, agent):
         agent.reset()
@@ -408,17 +409,18 @@ class ExperimentTaskSequenceRandomRewardChangeSFLearning(ExperimentTaskSequenceR
         return defaults
 
     def _construct_agent(self):
+        states = self.hparam[ExperimentHParam.HP_MDP_SIZE] ** 2
         if self.hparam[ExperimentTaskSequenceRandomRewardChangeSFLearning.HP_EXPLORATION] == 'optimistic':
-            init_sf_mat = np.eye(100 * 4, dtype=np.float32)
-            init_w_vec = np.ones(100 * 4, dtype=np.float32)
+            init_sf_mat = np.eye(states * 4, dtype=np.float32)
+            init_w_vec = np.ones(states * 4, dtype=np.float32)
         elif self.hparam[ExperimentTaskSequenceRandomRewardChangeSFLearning.HP_EXPLORATION] == 'egreedy':
-            init_sf_mat = np.zeros([100 * 4, 100 * 4], dtype=np.float32)
-            init_w_vec = np.zeros(100 * 4, dtype=np.float32)
+            init_sf_mat = np.zeros([states * 4, 100 * 4], dtype=np.float32)
+            init_w_vec = np.zeros(states * 4, dtype=np.float32)
         lr_sf = self.hparam[ExperimentTaskSequenceRandomRewardChangeSFLearning.HP_LEARNING_RATE_SF]
         lr_r = self.hparam[ExperimentTaskSequenceRandomRewardChangeSFLearning.HP_LEARNING_RATE_REWARD]
         gamma = self.hparam[ExperimentTaskSequenceRandomRewardChange.HP_GAMMA]
         agent = SFLearning(
-            num_states=100,
+            num_states=states,
             num_actions=4,
             learning_rate_sf=lr_sf,
             learning_rate_reward=lr_r,
