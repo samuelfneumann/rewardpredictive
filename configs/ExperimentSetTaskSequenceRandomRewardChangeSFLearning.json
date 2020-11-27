@@ -10,6 +10,7 @@
 		"epsilon" : 0.5,
 		"gamma": 0.9,
 		"episodes": 10,
-		"mdp_size": 8
+		"mdp_size": 8,
+		"num_tasks": 10
 	}
 }

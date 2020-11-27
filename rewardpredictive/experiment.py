@@ -200,8 +200,9 @@ class ExperimentTaskSequenceRandomRewardChange(ExperimentHParam):
     HP_NUM_EPISODES = 'episodes'
     HP_EPSILON = "epsilon"
     HP_GAMMA = "gamma"
+    HP_NUM_TASKS = "num_tasks"
 
-    def __init__(self, *params, num_tasks=10, base_dir="./data", **kwargs):
+    def __init__(self, *params, base_dir="./data", **kwargs):
 
         """
         Experiment task sequence for our random reward change experiments.
@@ -214,7 +215,7 @@ class ExperimentTaskSequenceRandomRewardChange(ExperimentHParam):
         :param kwargs: dict params to pass in
         """
         super().__init__(*params, **kwargs)
-        self.num_tasks = num_tasks
+        # self.num_tasks = num_tasks
         self.task_sequence = self._get_task_sequence()
         self.num_actions = self.task_sequence[0].action_space.n
         self.save_dir = self._get_save_dir(self.hparam, base_dir)
@@ -228,6 +229,7 @@ class ExperimentTaskSequenceRandomRewardChange(ExperimentHParam):
         defaults[ExperimentTaskSequenceRandomRewardChange.HP_EPSILON] = 0.1
         defaults[ExperimentTaskSequenceRandomRewardChange.HP_GAMMA] = 0.9
         defaults[ExperimentTaskSequenceRandomRewardChange.HP_MDP_SIZE] = 8
+        defaults[ExperimentTaskSequenceRandomRewardChange.HP_NUM_TASKS] = 10
         # defaults[ExperimentTaskSequenceRandomRewardChange.HP_MDP_SIZE] = self.task_sequence[0].num_states()
         return defaults
 
@@ -248,7 +250,8 @@ class ExperimentTaskSequenceRandomRewardChange(ExperimentHParam):
             self.hparam[ExperimentHParam.HP_MDP_SIZE] = mdp_size
         else:
             mdp_size = self.hparam[ExperimentHParam.HP_MDP_SIZE]
-            pbar = tqdm(range(self.num_tasks))
+            num_tasks = self.hparam[ExperimentTaskSequenceRandomRewardChange.HP_NUM_TASKS]
+            pbar = tqdm(range(num_tasks))
             for i in pbar:
                 mdp_seq.append(RandomRewardChange(size_maze=mdp_size))
                 pbar.set_description(f"Creating env #{i}")
