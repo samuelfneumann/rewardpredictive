@@ -3,6 +3,11 @@
 #
 # This source code is licensed under an MIT license found in the LICENSE file in the root directory of this project.
 #
+"""
+TODO:
+    Remove lr from hparam dictionary
+"""
+
 import pickle
 import multiprocessing as mp
 import os
@@ -42,7 +47,6 @@ def _load_experiment_list(base_dir='./data'):
 
 
 LEARNING_RATE_LIST = [0.1, 0.5, 0.9]
-
 
 class ExperimentHParam(rl.Experiment):
     HP_REPEATS = 'repeats'
@@ -194,6 +198,7 @@ class ExperimentTaskSequenceRandomRewardChange(ExperimentHParamParallel):
     HP_EXPLORATION = 'exploration'
     HP_TASK_SEQUENCE = 'task_sequence'
     HP_NUM_EPISODES = 'episodes'
+    HP_EPSILON = "epsilon"
 
     def __init__(self, *params, num_tasks=10, **kwargs):
 
@@ -217,6 +222,7 @@ class ExperimentTaskSequenceRandomRewardChange(ExperimentHParamParallel):
         defaults[ExperimentTaskSequenceRandomRewardChange.HP_TASK_SEQUENCE] = 'slight'
         defaults[ExperimentTaskSequenceRandomRewardChange.HP_EXPLORATION] = 'optimistic'
         defaults[ExperimentTaskSequenceRandomRewardChange.HP_NUM_EPISODES] = 100
+        defaults[ExperimentTaskSequenceRandomRewardChange.HP_EPSILON] = 0.1
         return defaults
 
     def _get_task_sequence(self):
@@ -250,8 +256,9 @@ class ExperimentTaskSequenceRandomRewardChange(ExperimentHParamParallel):
             policy = rl.policy.GreedyPolicy(agent)
             transition_listener = rl.data.transition_listener(agent, ep_len_logger)
         elif self.hparam[ExperimentTaskSequenceRandomRewardChange.HP_EXPLORATION] == 'egreedy':
-            policy = rl.policy.EGreedyPolicy(agent, 0.1)
-            exp_schedule = rl.schedule.LinearInterpolatedVariableSchedule([0, 180], [0.1, 0.1])
+            epsilon = self.hparam[ExperimentTaskSequenceRandomRewardChange.HP_EPSILON]
+            policy = rl.policy.EGreedyPolicy(agent, epsilon)
+            exp_schedule = rl.schedule.LinearInterpolatedVariableSchedule([0, 180], [epsilon, epsilon])
             exp_schedule_listener = EGreedyScheduleUpdate(policy, exp_schedule)
             transition_listener = rl.data.transition_listener(agent, exp_schedule_listener, ep_len_logger)
 
