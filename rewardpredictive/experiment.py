@@ -227,6 +227,7 @@ class ExperimentTaskSequenceRandomRewardChange(ExperimentHParam):
         defaults[ExperimentTaskSequenceRandomRewardChange.HP_NUM_EPISODES] = 100
         defaults[ExperimentTaskSequenceRandomRewardChange.HP_EPSILON] = 0.1
         defaults[ExperimentTaskSequenceRandomRewardChange.HP_GAMMA] = 0.9
+        defaults[ExperimentTaskSequenceRandomRewardChange.HP_MDP_SIZE] = 8
         # defaults[ExperimentTaskSequenceRandomRewardChange.HP_MDP_SIZE] = self.task_sequence[0].num_states()
         return defaults
 
