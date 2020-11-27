@@ -1,0 +1,5 @@
+{
+    "learning_rates": {
+        "q_learning_rates":[0.1, 0.3, 0.5, 0.7, 0.9]
+    }
+}
