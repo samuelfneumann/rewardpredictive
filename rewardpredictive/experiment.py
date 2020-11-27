@@ -234,7 +234,11 @@ class ExperimentTaskSequenceRandomRewardChange(ExperimentHParam):
         data_path = Path(ROOT_DIR, 'data', 'RandomRewardMaze')
         file_path = data_path / 'maze.pkl'
         mdp_seq = []
-        if data_path.is_dir() and file_path.is_file():
+
+        if not data_path.is_dir():
+            data_path.mkdir()
+
+        if file_path.is_file():
             # We don't need to generate
             print(f"Loading mazes from file {file_path}")
             with open(file_path, 'rb') as f:
@@ -248,7 +252,6 @@ class ExperimentTaskSequenceRandomRewardChange(ExperimentHParam):
                 mdp_seq.append(RandomRewardChange(size_maze=mdp_size))
                 pbar.set_description(f"Creating env #{i}")
 
-            data_path.mkdir()
             with open(file_path, 'wb') as f:
                 pickle.dump(mdp_seq, f)
             print(f"Dumping mazes to file {file_path}")
