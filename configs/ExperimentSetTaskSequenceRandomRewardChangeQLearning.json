@@ -5,10 +5,10 @@
 		}
     },
 	"experiment" : {
-		"repeats" : 1,
+		"repeats" : 2,
 		"epsilon" : 0.5,
 		"gamma": 0.9,
-		"episodes": 2,
+		"episodes": 10,
 		"mdp_size": 8
 	}
 }

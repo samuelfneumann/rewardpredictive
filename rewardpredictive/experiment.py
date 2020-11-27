@@ -64,9 +64,6 @@ class ExperimentHParam(rl.Experiment):
             hparam = json.loads(hparam_file.read())
 
         for key in hparam["experiment"].keys():
-            # Don't save actions from config file
-            if key == ExperimentTaskSequenceRandomRewardChange.HP_ACTIONS:
-                continue
             self.hparam[key] = hparam["experiment"][key]
 
     def _add_defaults_to_hparam(self, hparam: dict) -> dict:
@@ -203,7 +200,6 @@ class ExperimentTaskSequenceRandomRewardChange(ExperimentHParam):
     HP_NUM_EPISODES = 'episodes'
     HP_EPSILON = "epsilon"
     HP_GAMMA = "gamma"
-    HP_ACTIONS = "actions"
 
     def __init__(self, *params, num_tasks=10, **kwargs):
 
@@ -220,7 +216,7 @@ class ExperimentTaskSequenceRandomRewardChange(ExperimentHParam):
         super().__init__(*params, **kwargs)
         self.num_tasks = num_tasks
         self.task_sequence = self._get_task_sequence()
-        self.hparam[ExperimentTaskSequenceRandomRewardChange.HP_ACTIONS] = self.task_sequence[0].action_space.n
+        self.num_actions = self.task_sequence[0].action_space.n
 
     def get_default_hparam(self) -> dict:
         defaults = super().get_default_hparam()
@@ -301,14 +297,13 @@ class ExperimentTaskSequenceRandomRewardChangeQLearning(ExperimentTaskSequenceRa
 
     def _construct_agent(self):
         states = self.hparam[ExperimentHParam.HP_MDP_SIZE] ** 2
-        actions = self.hparam[ExperimentTaskSequenceRandomRewardChange.HP_ACTIONS]
         if self.hparam[ExperimentTaskSequenceRandomRewardChange.HP_EXPLORATION] == 'optimistic':
-            q_vals = np.ones([actions, states], dtype=np.float32)
+            q_vals = np.ones([self.num_actions, states], dtype=np.float32)
         elif self.hparam[ExperimentTaskSequenceRandomRewardChange.HP_EXPLORATION] == 'egreedy':
-            q_vals = np.zeros([actions, states], dtype=np.float32)
+            q_vals = np.zeros([self.num_actions, states], dtype=np.float32)
         lr = self.hparam[ExperimentTaskSequenceRandomRewardChangeQLearning.HP_LEARNING_RATE]
         gamma = self.hparam[ExperimentTaskSequenceRandomRewardChange.HP_GAMMA]
-        return rl.agent.QLearning(num_states=states, num_actions=actions, learning_rate=lr, gamma=gamma, init_Q=q_vals)
+        return rl.agent.QLearning(num_states=states, num_actions=self.num_actions, learning_rate=lr, gamma=gamma, init_Q=q_vals)
 
     def _reset_agent(self, agent):
         agent.reset()
@@ -415,19 +410,18 @@ class ExperimentTaskSequenceRandomRewardChangeSFLearning(ExperimentTaskSequenceR
 
     def _construct_agent(self):
         states = self.hparam[ExperimentHParam.HP_MDP_SIZE] ** 2
-        actions = self.hparam[ExperimentTaskSequenceRandomRewardChange.HP_ACTIONS]
         if self.hparam[ExperimentTaskSequenceRandomRewardChangeSFLearning.HP_EXPLORATION] == 'optimistic':
-            init_sf_mat = np.eye(states * actions, dtype=np.float32)
-            init_w_vec = np.ones(states * actions, dtype=np.float32)
+            init_sf_mat = np.eye(states * self.num_actions, dtype=np.float32)
+            init_w_vec = np.ones(states * self.num_actions, dtype=np.float32)
         elif self.hparam[ExperimentTaskSequenceRandomRewardChangeSFLearning.HP_EXPLORATION] == 'egreedy':
-            init_sf_mat = np.zeros([states * actions, 100 * 4], dtype=np.float32)
-            init_w_vec = np.zeros(states * actions, dtype=np.float32)
+            init_sf_mat = np.zeros([states * self.num_actions, 100 * 4], dtype=np.float32)
+            init_w_vec = np.zeros(states * self.num_actions, dtype=np.float32)
         lr_sf = self.hparam[ExperimentTaskSequenceRandomRewardChangeSFLearning.HP_LEARNING_RATE_SF]
         lr_r = self.hparam[ExperimentTaskSequenceRandomRewardChangeSFLearning.HP_LEARNING_RATE_REWARD]
         gamma = self.hparam[ExperimentTaskSequenceRandomRewardChange.HP_GAMMA]
         agent = SFLearning(
             num_states=states,
-            num_actions=actions,
+            num_actions=self.num_actions,
             learning_rate_sf=lr_sf,
             learning_rate_reward=lr_r,
             gamma=gamma,
