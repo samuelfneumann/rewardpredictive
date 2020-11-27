@@ -50,6 +50,7 @@ EXPERIMENT_SET_ALPHA_BETA_NAME_LIST = [
 @click.option('--alpha', default=None, type=float, help='Alpha parameter.')
 @click.option('--beta', default=None, type=float, help='Beta parameter.')
 def main(experiment_set, best, alpha, beta):
+    experiment_set = experiment_set.strip()
     if alpha is not None and best:
         raise Exception('Cannot specify --alpha and run -b/--best flag at the same time.')
     if beta is not None and best:
