@@ -3,10 +3,6 @@
 #
 # This source code is licensed under an MIT license found in the LICENSE file in the root directory of this project.
 #
-"""
-TODO:
-    Remove lr from hparam dictionary
-"""
 
 import pickle
 import multiprocessing as mp
@@ -201,6 +197,7 @@ class ExperimentTaskSequenceRandomRewardChange(ExperimentHParam):
     HP_TASK_SEQUENCE = 'task_sequence'
     HP_NUM_EPISODES = 'episodes'
     HP_EPSILON = "epsilon"
+    HP_GAMMA = "gamma"
 
     def __init__(self, *params, num_tasks=10, **kwargs):
 
@@ -225,6 +222,7 @@ class ExperimentTaskSequenceRandomRewardChange(ExperimentHParam):
         defaults[ExperimentTaskSequenceRandomRewardChange.HP_EXPLORATION] = 'optimistic'
         defaults[ExperimentTaskSequenceRandomRewardChange.HP_NUM_EPISODES] = 100
         defaults[ExperimentTaskSequenceRandomRewardChange.HP_EPSILON] = 0.1
+        defaults[ExperimentTaskSequenceRandomRewardChange.HP_GAMMA] = 0.9
         return defaults
 
     def _get_task_sequence(self):
@@ -296,7 +294,8 @@ class ExperimentTaskSequenceRandomRewardChangeQLearning(ExperimentTaskSequenceRa
         elif self.hparam[ExperimentTaskSequenceRandomRewardChange.HP_EXPLORATION] == 'egreedy':
             q_vals = np.zeros([4, 100], dtype=np.float32)
         lr = self.hparam[ExperimentTaskSequenceRandomRewardChangeQLearning.HP_LEARNING_RATE]
-        return rl.agent.QLearning(num_states=100, num_actions=4, learning_rate=lr, gamma=0.9, init_Q=q_vals)
+        gamma = self.hparam[ExperimentTaskSequenceRandomRewardChange.HP_GAMMA]
+        return rl.agent.QLearning(num_states=100, num_actions=4, learning_rate=lr, gamma=gamma, init_Q=q_vals)
 
     def _reset_agent(self, agent):
         agent.reset()
@@ -410,12 +409,13 @@ class ExperimentTaskSequenceRandomRewardChangeSFLearning(ExperimentTaskSequenceR
             init_w_vec = np.zeros(100 * 4, dtype=np.float32)
         lr_sf = self.hparam[ExperimentTaskSequenceRandomRewardChangeSFLearning.HP_LEARNING_RATE_SF]
         lr_r = self.hparam[ExperimentTaskSequenceRandomRewardChangeSFLearning.HP_LEARNING_RATE_REWARD]
+        gamma = self.hparam[ExperimentTaskSequenceRandomRewardChange.HP_GAMMA]
         agent = SFLearning(
             num_states=100,
             num_actions=4,
             learning_rate_sf=lr_sf,
             learning_rate_reward=lr_r,
-            gamma=0.9,
+            gamma=gamma,
             init_sf_mat=init_sf_mat,
             init_w_vec=init_w_vec
         )

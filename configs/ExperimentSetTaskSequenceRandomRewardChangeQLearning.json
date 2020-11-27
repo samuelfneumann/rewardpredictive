@@ -6,6 +6,7 @@
     },
 	"experiment" : {
 		"repeats" : 1,
-		"epsilon" : 0.5
+		"epsilon" : 0.5,
+		"gamma": 0.9
 	}
 }
