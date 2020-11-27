@@ -12,6 +12,7 @@ from itertools import product
 from os import path as osp
 from tqdm import tqdm
 from pathlib import Path
+import json
 
 import yaml
 
@@ -50,8 +51,16 @@ class ExperimentHParam(rl.Experiment):
         if hparam is None:
             hparam = {}
         self.hparam = self._add_defaults_to_hparam(hparam)
+        self._set_hparam("/home/samuel/Documents/CMPUT655/Project/rewardpredictive/configs/ExperimentSetTaskSequenceRandomRewardChangeQLearning.json")
         self.results = {}
         self.save_dir = self._get_save_dir(self.hparam, base_dir)
+
+    def _set_hparam(self, file):
+        with open(file) as hparam_file:
+            hparam = json.loads(hparam_file.read())
+
+        for key in hparam.keys():
+            self.hparam[key] = hparam[key]
 
     def _add_defaults_to_hparam(self, hparam: dict) -> dict:
         hparam_complete = self.get_default_hparam()
@@ -179,8 +188,8 @@ RANDOM 10x10 GRIDWORLD EXPERIMENTS BELOW
 """
 
 
-# class ExperimentTaskSequenceRandomRewardChange(ExperimentHParamParallel):
-class ExperimentTaskSequenceRandomRewardChange(ExperimentHParam):
+class ExperimentTaskSequenceRandomRewardChange(ExperimentHParamParallel):
+# class ExperimentTaskSequenceRandomRewardChange(ExperimentHParam):
 
     HP_EXPLORATION = 'exploration'
     HP_TASK_SEQUENCE = 'task_sequence'
