@@ -14,6 +14,7 @@ from os import path as osp
 from tqdm import tqdm
 from pathlib import Path
 import json
+from math import sqrt
 
 import yaml
 
@@ -48,6 +49,7 @@ LEARNING_RATE_LIST = [0.1, 0.5, 0.9]
 
 class ExperimentHParam(rl.Experiment):
     HP_REPEATS = 'repeats'
+    HP_MDP_SIZE = "mdp_size"
 
     def __init__(self, hparam=None, base_dir='./data'):
         if hparam is None:
@@ -198,7 +200,6 @@ class ExperimentTaskSequenceRandomRewardChange(ExperimentHParam):
     HP_NUM_EPISODES = 'episodes'
     HP_EPSILON = "epsilon"
     HP_GAMMA = "gamma"
-    HP_MDP_SIZE = "mdp_size"
     HP_ACTIONS = "actions"
 
     def __init__(self, *params, num_tasks=10, **kwargs):
@@ -213,9 +214,9 @@ class ExperimentTaskSequenceRandomRewardChange(ExperimentHParam):
         :param params: params to pass in
         :param kwargs: dict params to pass in
         """
-        self.task_sequence = self._get_task_sequence()
         super().__init__(*params, **kwargs)
         self.num_tasks = num_tasks
+        self.task_sequence = self._get_task_sequence()
 
     def get_default_hparam(self) -> dict:
         defaults = super().get_default_hparam()
@@ -225,8 +226,7 @@ class ExperimentTaskSequenceRandomRewardChange(ExperimentHParam):
         defaults[ExperimentTaskSequenceRandomRewardChange.HP_NUM_EPISODES] = 100
         defaults[ExperimentTaskSequenceRandomRewardChange.HP_EPSILON] = 0.1
         defaults[ExperimentTaskSequenceRandomRewardChange.HP_GAMMA] = 0.9
-        # defaults[ExperimentSetTaskSequenceRandomRewardChange.HP_MDP_SIZE] = self.task_sequence[0].size_maze
-        defaults[ExperimentTaskSequenceRandomRewardChange.HP_ACTIONS] = self.task_sequence[0].action_space.n
+        # defaults[ExperimentTaskSequenceRandomRewardChange.HP_MDP_SIZE] = self.task_sequence[0].num_states()
         return defaults
 
     def _get_task_sequence(self):
@@ -238,10 +238,13 @@ class ExperimentTaskSequenceRandomRewardChange(ExperimentHParam):
             print(f"Loading mazes from file {file_path}")
             with open(file_path, 'rb') as f:
                 mdp_seq = pickle.load(f)
+            mdp_size = int(sqrt(mdp_seq[0].num_states()))
+            self.hparam[ExperimentHParam.HP_MDP_SIZE] = mdp_size
         else:
+            mdp_size = self.hparam[ExperimentHParam.HP_MDP_SIZE]
             pbar = tqdm(range(self.num_tasks))
             for i in pbar:
-                mdp_seq.append(RandomRewardChange())
+                mdp_seq.append(RandomRewardChange(size_maze=mdp_size))
                 pbar.set_description(f"Creating env #{i}")
 
             data_path.mkdir()

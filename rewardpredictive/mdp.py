@@ -113,7 +113,7 @@ class RandomRewardChange(rl.environment.TabularMDP):
         :param slip_prob:
         """
         barrier_idx_list = []
-        self.size_maze  = size_maze
+        self.size_maze = size_maze
         t_fn = generate_gridworld_transition_function_with_barrier(self.size_maze, self.size_maze, slip_prob, barrier_idx_list)
 
         start_list_idx = [pt_to_idx((0, 0), (self.size_maze, self.size_maze))]
