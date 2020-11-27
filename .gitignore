@@ -131,3 +131,5 @@ dmypy.json
 
 data/Experiment*
 figure
+#Mac
+.DS_Store
