@@ -30,6 +30,8 @@ from .utils import simulate_episodes
 
 from definitions import ROOT_DIR
 
+CONFIG_FILE = "/home/samuel/Documents/CMPUT655/Project/rewardpredictive/configs/ExperimentSetTaskSequenceRandomRewardChangeQLearning.json"
+
 def _load_experiment_from_save_dir(save_dir):
     with open(osp.join(save_dir, 'index.yaml'), 'r') as f:
         exp_dict = yaml.load(f, Loader=yaml.Loader)
@@ -55,16 +57,16 @@ class ExperimentHParam(rl.Experiment):
         if hparam is None:
             hparam = {}
         self.hparam = self._add_defaults_to_hparam(hparam)
-        self._set_hparam("/home/samuel/Documents/CMPUT655/Project/rewardpredictive/configs/ExperimentSetTaskSequenceRandomRewardChangeQLearning.json")
+        self._load_config(CONFIG_FILE)
         self.results = {}
         self.save_dir = self._get_save_dir(self.hparam, base_dir)
 
-    def _set_hparam(self, file):
+    def _load_config(self, file):
         with open(file) as hparam_file:
             hparam = json.loads(hparam_file.read())
 
-        for key in hparam.keys():
-            self.hparam[key] = hparam[key]
+        for key in hparam["experiment"].keys():
+            self.hparam[key] = hparam["experiment"][key]
 
     def _add_defaults_to_hparam(self, hparam: dict) -> dict:
         hparam_complete = self.get_default_hparam()
@@ -192,8 +194,8 @@ RANDOM 10x10 GRIDWORLD EXPERIMENTS BELOW
 """
 
 
-class ExperimentTaskSequenceRandomRewardChange(ExperimentHParamParallel):
-# class ExperimentTaskSequenceRandomRewardChange(ExperimentHParam):
+# class ExperimentTaskSequenceRandomRewardChange(ExperimentHParamParallel):
+class ExperimentTaskSequenceRandomRewardChange(ExperimentHParam):
 
     HP_EXPLORATION = 'exploration'
     HP_TASK_SEQUENCE = 'task_sequence'
@@ -319,6 +321,20 @@ class ExperimentSetTaskSequenceRandomRewardChange(ExperimentSet):
             print('{}: {}'.format(k, v))
         return exp
 
+    @classmethod
+    def get_lr_dict(cls):
+        learning_rates = {"q_learning_rates": None, "sf_learning_rates": None,
+                          "r_learning_rates": None}
+        with open(CONFIG_FILE) as config:
+            hparam = json.loads(config.read())
+            # return hparam["experiment_set"]["learning_rates"]
+
+        for key in hparam["experiment_set"]["learning_rates"].keys():
+            learning_rates[key] = hparam["experiment_set"]["learning_rates"][key]
+
+        return learning_rates
+
+
 
 class ExperimentSetTaskSequenceRandomRewardChangeQLearning(ExperimentSetTaskSequenceRandomRewardChange):
 
@@ -336,7 +352,8 @@ class ExperimentSetTaskSequenceRandomRewardChangeQLearning(ExperimentSetTaskSequ
     @classmethod
     def construct(cls, base_dir='./data'):
         exp_list = []
-        lr_list = [.1, .3, .5, .7, .9]
+        # lr_list = [.1, .3, .5, .7, .9]
+        lr_list = ExperimentSetTaskSequenceRandomRewardChange.get_lr_dict()["q_learning_rates"]
         for lr, task_seq, expl in product(lr_list, ['significant'], ['egreedy']):
             exp_list.append(ExperimentTaskSequenceRandomRewardChangeQLearning({
                 ExperimentTaskSequenceRandomRewardChangeQLearning.HP_LEARNING_RATE: lr,
@@ -362,7 +379,8 @@ class ExperimentSetTaskSequenceRandomRewardChangeQTransfer(ExperimentSetTaskSequ
     @classmethod
     def construct(cls, base_dir='./data'):
         exp_list = []
-        lr_list = [.1, .3, .5, .7, .9]
+        # lr_list = [.1, .3, .5, .7, .9]
+        lr_list = ExperimentSetTaskSequenceRandomRewardChange.get_lr_dict()["q_learning_rates"]
         for lr, task_seq, expl in product(lr_list, ['significant'], ['egreedy']):
             exp_list.append(ExperimentTaskSequenceRandomRewardChangeQTransfer({
                 ExperimentTaskSequenceRandomRewardChangeQTransfer.HP_LEARNING_RATE: lr,
@@ -433,8 +451,11 @@ class ExperimentSetTaskSequenceRandomRewardChangeSFLearning(ExperimentSetTaskSeq
     @classmethod
     def construct(cls, base_dir='./data'):
         exp_list = []
-        lr_list = [.1, .3, .5, .7, .9]
-        param_it = product(lr_list, lr_list, ['significant'], ['egreedy'])
+        # lr_list = [.1, .3, .5, .7, .9]
+        lr_dict = ExperimentSetTaskSequenceRandomRewardChange.get_lr_dict()
+        sf_lr_list = lr_dict["sf_learning_rates"]
+        r_lr_list = lr_dict["r_learning_rates"]
+        param_it = product(sf_lr_list, r_lr_list, ['significant'], ['egreedy'])
         for lr_sf, lr_r, task_seq, expl in param_it:
             exp_list.append(ExperimentTaskSequenceRandomRewardChangeSFLearning({
                 ExperimentTaskSequenceRandomRewardChangeSFLearning.HP_LEARNING_RATE_SF: lr_sf,
@@ -462,8 +483,11 @@ class ExperimentSetTaskSequenceRandomRewardChangeSFTransfer(ExperimentSetTaskSeq
     @classmethod
     def construct(cls, base_dir='./data'):
         exp_list = []
-        lr_list = [.1, .3, .5, .7, .9]
-        it = product(lr_list, lr_list, ['significant'], ['egreedy'])
+        #lr_list = [.1, .3, .5, .7, .9]
+        lr_dict = ExperimentSetTaskSequenceRandomRewardChange.get_lr_dict()
+        sf_lr_list = lr_dict["sf_learning_rates"]
+        r_lr_list = lr_dict["r_learning_rates"]
+        it = product(sf_lr_list, r_lr_list, ['significant'], ['egreedy'])
         for lr_sf, lr_r, task_seq, expl in it:
             exp_list.append(ExperimentTaskSequenceRandomRewardChangeSFTransfer({
                 ExperimentTaskSequenceRandomRewardChangeSFTransfer.HP_LEARNING_RATE_SF: lr_sf,

@@ -1,7 +1,11 @@
 {
-    "learning_rates": {
-        "q_learning_rates":[0.1, 0.3, 0.5, 0.7, 0.9]
+	"experiment_set" : {
+    	"learning_rates": {
+        	"q_learning_rates":[0.1, 0.3, 0.5, 0.7, 0.9]
+		}
     },
-	"repeats" : 1,
-	"epsilon" : 0.5
+	"experiment" : {
+		"repeats" : 1,
+		"epsilon" : 0.5
+	}
 }
