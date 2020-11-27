@@ -1,5 +1,14 @@
 {
-    "learning_rates": {
-        "q_learning_rates":[0.1, 0.3, 0.5, 0.7, 0.9]
-    }
+	"experiment_set": {
+    	"learning_rates": {
+    	    "q_learning_rates":[0.1, 0.3, 0.5, 0.7, 0.9]
+		}
+    },
+	"experiment" : {
+		"repeats" : 2,
+		"epsilon" : 0.5,
+		"gamma": 0.9,
+		"episodes": 10,
+		"mdp_size": 8
+	}
 }
