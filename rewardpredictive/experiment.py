@@ -198,6 +198,8 @@ class ExperimentTaskSequenceRandomRewardChange(ExperimentHParam):
     HP_NUM_EPISODES = 'episodes'
     HP_EPSILON = "epsilon"
     HP_GAMMA = "gamma"
+    HP_MDP_SIZE = "mdp_size"
+    HP_ACTIONS = "actions"
 
     def __init__(self, *params, num_tasks=10, **kwargs):
 
@@ -211,9 +213,9 @@ class ExperimentTaskSequenceRandomRewardChange(ExperimentHParam):
         :param params: params to pass in
         :param kwargs: dict params to pass in
         """
+        self.task_sequence = self._get_task_sequence()
         super().__init__(*params, **kwargs)
         self.num_tasks = num_tasks
-        self.task_sequence = self._get_task_sequence()
 
     def get_default_hparam(self) -> dict:
         defaults = super().get_default_hparam()
@@ -223,6 +225,8 @@ class ExperimentTaskSequenceRandomRewardChange(ExperimentHParam):
         defaults[ExperimentTaskSequenceRandomRewardChange.HP_NUM_EPISODES] = 100
         defaults[ExperimentTaskSequenceRandomRewardChange.HP_EPSILON] = 0.1
         defaults[ExperimentTaskSequenceRandomRewardChange.HP_GAMMA] = 0.9
+        # defaults[ExperimentSetTaskSequenceRandomRewardChange.HP_MDP_SIZE] = self.task_sequence[0].size_maze
+        defaults[ExperimentTaskSequenceRandomRewardChange.HP_ACTIONS] = self.task_sequence[0].action_space.n
         return defaults
 
     def _get_task_sequence(self):
