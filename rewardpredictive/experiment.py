@@ -195,8 +195,8 @@ RANDOM 10x10 GRIDWORLD EXPERIMENTS BELOW
 """
 
 
-# class ExperimentTaskSequenceRandomRewardChange(ExperimentHParamParallel):
-class ExperimentTaskSequenceRandomRewardChange(ExperimentHParam):
+class ExperimentTaskSequenceRandomRewardChange(ExperimentHParamParallel):
+# class ExperimentTaskSequenceRandomRewardChange(ExperimentHParam):
 
     HP_EXPLORATION = 'exploration'
     HP_TASK_SEQUENCE = 'task_sequence'
