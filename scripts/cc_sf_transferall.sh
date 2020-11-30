@@ -6,6 +6,7 @@
 #SBATCH --mail-user=ruo.tao@mail.mcgill.ca
 #SBATCH --mail-type=ALL
 
-source ../venv/bin/activate
-python ../main.py -e ExperimentSetTaskSequenceRandomRewardChangeSFTransferAll
-
+#cd ../
+#source venv/bin/activate
+#python main.py -e ExperimentSetTaskSequenceRandomRewardChangeSFTransferAll
+echo "hello world"
