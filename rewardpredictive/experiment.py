@@ -431,7 +431,7 @@ class ExperimentTaskSequenceRandomRewardChangeSFLearning(ExperimentTaskSequenceR
             init_sf_mat = np.eye(states * self.num_actions, dtype=np.float32)
             init_w_vec = np.ones(states * self.num_actions, dtype=np.float32)
         elif self.hparam[ExperimentTaskSequenceRandomRewardChangeSFLearning.HP_EXPLORATION] == 'egreedy':
-            init_sf_mat = np.zeros([states * self.num_actions, 100 * 4], dtype=np.float32)
+            init_sf_mat = np.zeros([states * self.num_actions, states * self.num_actions], dtype=np.float32)
             init_w_vec = np.zeros(states * self.num_actions, dtype=np.float32)
         lr_sf = self.hparam[ExperimentTaskSequenceRandomRewardChangeSFLearning.HP_LEARNING_RATE_SF]
         lr_r = self.hparam[ExperimentTaskSequenceRandomRewardChangeSFLearning.HP_LEARNING_RATE_REWARD]
