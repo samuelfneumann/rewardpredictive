@@ -1,0 +1,9 @@
+{
+  "maze_size": 8,
+  "gamma": 0.9,
+  "epsilon": 0.1,
+  "episodes": 200,
+  "repeats": 20,
+  "num_tasks": 10,
+  "max_steps": 1000
+}

@@ -133,3 +133,7 @@ data/Experiment*
 figure
 #Mac
 .DS_Store
+
+# vscode
+.vs
+.vscode
