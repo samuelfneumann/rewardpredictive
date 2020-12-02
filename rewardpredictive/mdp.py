@@ -3,8 +3,9 @@
 #
 # This source code is licensed under an MIT license found in the LICENSE file in the root directory of this project.
 #
-
+import pickle
 import numpy as np
+from tqdm import trange
 import rlutils as rl
 from rlutils.environment.gridworld import pt_to_idx, \
     generate_gridworld_transition_function_with_barrier, \
@@ -120,7 +121,9 @@ class RandomRewardChange(rl.environment.TabularMDP):
         self.possible_indices = np.arange(0, self.size_maze)
         self.ignore_positions = [(0, 0)]
 
-        goal_list_idx = [pt_to_idx(self.sample_position(), (self.size_maze, self.size_maze))]
+        self.goal_position = self.sample_position()
+
+        goal_list_idx = [pt_to_idx(self.goal_position, (self.size_maze, self.size_maze))]
 
         def r_fn(s_1, a, s_2):
             nonlocal goal_list_idx
@@ -148,3 +151,70 @@ class RandomRewardChange(rl.environment.TabularMDP):
 
     def __str__(self):
         return 'TaskBSignificantRewardChange'
+
+def mdp_goal_dist(m1, m2, ord=1):
+    m1_position = np.array(m1.goal_position)
+    m2_position = np.array(m2.goal_position)
+    l1_norm = np.linalg.norm(m1_position - m2_position, ord=ord)
+    return l1_norm
+
+def generate_l1_random_tasks(size_maze, num_tasks, lower=None, upper=None):
+    assert lower is None or upper is None
+
+    mdp_seq = [RandomRewardChange(size_maze=size_maze)]
+
+    if lower is None:
+        lower = float('inf')
+
+    if upper is None:
+        upper = 0
+
+    for t in trange(num_tasks - 1):
+        candidate = RandomRewardChange(size_maze=size_maze)
+        l1_norm = mdp_goal_dist(mdp_seq[-1], candidate)
+        while l1_norm > lower or l1_norm < upper or l1_norm == 0:
+            candidate = RandomRewardChange(size_maze=size_maze)
+            l1_norm = mdp_goal_dist(mdp_seq[-1], candidate)
+
+        mdp_seq.append(candidate)
+
+    return mdp_seq
+
+def test_mdps_dist(mdp_seq, dist, bound="lower"):
+    assert bound == "lower" or bound == "upper"
+    all_positions = [mdp_seq[0].goal_position]
+    for i in range(1, len(mdp_seq)):
+        l1_norm = mdp_goal_dist(mdp_seq[i - 1], mdp_seq[i])
+        if bound == "lower":
+            if l1_norm > lower:
+                return False
+        elif bound == "upper":
+            if l1_norm < upper:
+                return False
+        all_positions.append(mdp_seq[i].goal_position)
+    print(f"Tesing for bound {bound}. All positions: {all_positions}")
+
+    return True
+
+if __name__ == "__main__":
+    from pathlib import Path
+    from definitions import ROOT_DIR
+
+    random_reward_dir = Path(ROOT_DIR, 'data', 'RandomRewardMaze')
+
+    lower = 3
+    print("Generating similar mdps")
+    lower_mdp_seq = generate_l1_random_tasks(8, 20, lower=lower)
+    assert test_mdps_dist(lower_mdp_seq, lower, "lower")
+    lower_file_path = random_reward_dir / 'lower_maze.pkl'
+    print(f"Saving to {lower_file_path}")
+    with open(lower_file_path, 'wb') as f:
+        pickle.dump(lower_mdp_seq, f)
+
+    upper = 10
+    print("Generating dissimilar mdps")
+    upper_mdp_seq = generate_l1_random_tasks(8, 20, upper=upper)
+    assert test_mdps_dist(upper_mdp_seq, upper, "upper")
+    upper_file_path = random_reward_dir / 'upper_maze.pkl'
+    with open(upper_file_path, 'wb') as f:
+        pickle.dump(upper_mdp_seq, f)
