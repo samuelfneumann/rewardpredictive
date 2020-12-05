@@ -29,7 +29,7 @@ from definitions import ROOT_DIR
 
 
 def experiment_to_config(exp_set_name):
-    return "./configs/"+exp_set_name+".json"
+    return f"{ROOT_DIR}/configs/"+exp_set_name+".json"
 
 
 def _load_experiment_from_save_dir(save_dir):
@@ -130,7 +130,7 @@ class ExperimentHParam(rl.Experiment):
         exp.results = exp_dict['results']
         for k in exp.results:
             exp.results[k] = [
-                np.load(osp.join(exp.save_dir, p), allow_pickle=True) for p in
+                np.load(osp.join(save_dir, p), allow_pickle=True) for p in
                 exp.results[k]]
         return exp
 
@@ -246,7 +246,7 @@ class ExperimentTaskSequenceRandomRewardChange(ExperimentHParamParallel):
 
         if file_path.is_file():
             # We don't need to generate
-            print(f"Loading mazes from file {file_path}")
+            # print(f"Loading mazes from file {file_path}")
             with open(file_path, 'rb') as f:
                 mdp_seq = pickle.load(f)
             mdp_size = int(sqrt(mdp_seq[0].num_states()))
@@ -365,6 +365,8 @@ class ExperimentSetTaskSequenceRandomRewardChangeQLearning(ExperimentSetTaskSequ
 
     @classmethod
     def load(cls, base_dir='./data'):
+        global CONFIG_FILE
+        CONFIG_FILE = experiment_to_config(cls.__name__)
         exp_list = _load_experiment_list(
             osp.join(base_dir, ExperimentTaskSequenceRandomRewardChangeQLearning.get_class_name()))
         return ExperimentSetTaskSequenceRandomRewardChangeQLearning(exp_list)
@@ -394,6 +396,8 @@ class ExperimentSetTaskSequenceRandomRewardChangeQTransfer(ExperimentSetTaskSequ
 
     @classmethod
     def load(cls, base_dir='./data'):
+        global CONFIG_FILE
+        CONFIG_FILE = experiment_to_config(cls.__name__)
         exp_list = _load_experiment_list(
             osp.join(base_dir, ExperimentTaskSequenceRandomRewardChangeQTransfer.get_class_name()))
         return ExperimentSetTaskSequenceRandomRewardChangeQTransfer(exp_list)
@@ -470,6 +474,8 @@ class ExperimentSetTaskSequenceRandomRewardChangeSFLearning(ExperimentSetTaskSeq
 
     @classmethod
     def load(cls, base_dir='./data'):
+        global CONFIG_FILE
+        CONFIG_FILE = experiment_to_config(cls.__name__)
         exp_list = _load_experiment_list(
             osp.join(base_dir, ExperimentTaskSequenceRandomRewardChangeSFLearning.get_class_name()))
         return ExperimentSetTaskSequenceRandomRewardChangeSFLearning(exp_list)
@@ -504,6 +510,8 @@ class ExperimentSetTaskSequenceRandomRewardChangeSFTransfer(ExperimentSetTaskSeq
 
     @classmethod
     def load(cls, base_dir='./data'):
+        global CONFIG_FILE
+        CONFIG_FILE = experiment_to_config(cls.__name__)
         exp_list = _load_experiment_list(
             osp.join(base_dir, ExperimentTaskSequenceRandomRewardChangeSFTransfer.get_class_name()))
         return ExperimentSetTaskSequenceRandomRewardChangeSFTransfer(exp_list)
@@ -538,6 +546,8 @@ class ExperimentSetTaskSequenceRandomRewardChangeSFTransferAll(ExperimentSetTask
 
     @classmethod
     def load(cls, base_dir='./data'):
+        global CONFIG_FILE
+        CONFIG_FILE = experiment_to_config(cls.__name__)
         exp_list = _load_experiment_list(
             osp.join(base_dir, ExperimentTaskSequenceRandomRewardChangeSFTransferAll.get_class_name()))
         return ExperimentSetTaskSequenceRandomRewardChangeSFTransferAll(exp_list)
