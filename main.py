@@ -6,6 +6,7 @@
 import click
 
 import rewardpredictive as rp
+from rewardpredictive.mdp import RandomRewardChange
 
 EXPERIMENT_SET_NAME_LIST = [
     'ExperimentSetRepresentationEvaluation',
