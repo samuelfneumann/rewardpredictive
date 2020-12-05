@@ -130,7 +130,7 @@ class ExperimentHParam(rl.Experiment):
         exp.results = exp_dict['results']
         for k in exp.results:
             exp.results[k] = [
-                np.load(osp.join(exp.save_dir, p), allow_pickle=True) for p in
+                np.load(osp.join(save_dir, p), allow_pickle=True) for p in
                 exp.results[k]]
         return exp
 
@@ -246,7 +246,7 @@ class ExperimentTaskSequenceRandomRewardChange(ExperimentHParamParallel):
 
         if file_path.is_file():
             # We don't need to generate
-            print(f"Loading mazes from file {file_path}")
+            # print(f"Loading mazes from file {file_path}")
             with open(file_path, 'rb') as f:
                 mdp_seq = pickle.load(f)
             mdp_size = int(sqrt(mdp_seq[0].num_states()))
