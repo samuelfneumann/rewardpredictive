@@ -270,15 +270,16 @@ class ExperimentTaskSequenceRandomRewardChange(ExperimentHParamParallel):
         episodes = self.hparam[ExperimentTaskSequenceRandomRewardChange.HP_NUM_EPISODES]
         agent = self._construct_agent()
         ep_len_logger = rl.logging.LoggerEpisodeLength()
+        rew_logger = rl.logging.LoggerTotalReward()
         if self.hparam[ExperimentTaskSequenceRandomRewardChange.HP_EXPLORATION] == 'optimistic':
             policy = rl.policy.GreedyPolicy(agent)
-            transition_listener = rl.data.transition_listener(agent, ep_len_logger)
+            transition_listener = rl.data.transition_listener(agent, ep_len_logger, rew_logger)
         elif self.hparam[ExperimentTaskSequenceRandomRewardChange.HP_EXPLORATION] == 'egreedy':
             epsilon = self.hparam[ExperimentTaskSequenceRandomRewardChange.HP_EPSILON]
             policy = rl.policy.EGreedyPolicy(agent, epsilon)
             exp_schedule = rl.schedule.LinearInterpolatedVariableSchedule([0, 180], [epsilon, epsilon])
             exp_schedule_listener = EGreedyScheduleUpdate(policy, exp_schedule)
-            transition_listener = rl.data.transition_listener(agent, exp_schedule_listener, ep_len_logger)
+            transition_listener = rl.data.transition_listener(agent, exp_schedule_listener, ep_len_logger, rew_logger)
 
         for task in self.task_sequence:
             simulate_episodes(task, policy, transition_listener, episodes, max_steps=1000)
