@@ -4,6 +4,7 @@
 # This source code is licensed under an MIT license found in the LICENSE file in the root directory of this project.
 #
 import click
+from rewardpredictive.mdp import RandomRewardChange, FixedTerminalRewardChange
 
 import rewardpredictive as rp
 from rewardpredictive.mdp import RandomRewardChange

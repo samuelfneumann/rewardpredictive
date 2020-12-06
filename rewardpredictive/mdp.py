@@ -115,10 +115,9 @@ class FixedTerminalRewardChange(rl.environment.TabularMDP):
         self.size_maze = size_maze
         t_fn = generate_gridworld_transition_function_with_barrier(self.size_maze, self.size_maze, slip_prob, barrier_idx_list)
 
-        start_list_idx = [pt_to_idx((0, 0), (self.size_maze, self.size_maze))]
         self.possible_indices = np.arange(0, self.size_maze)
-        self.ignore_positions = [(0, 0)]
         middle = self.possible_indices[len(self.possible_indices) // 2]
+        start_list_idx = [pt_to_idx((middle, middle), (self.size_maze, self.size_maze))]
         idxs = [0, middle, self.possible_indices[-1]]
         self.terminal_positions = list(product(idxs, idxs))
         self.terminal_positions.remove((middle, middle))
