@@ -338,13 +338,17 @@ class ExperimentTaskSequenceRandomRewardChangeQTransfer(ExperimentTaskSequenceRa
 
 class ExperimentSetTaskSequenceRandomRewardChange(ExperimentSet):
 
-    def get_best_experiment(self, exploration='optimistic', task_sequence='slight'):
+    def get_best_experiment(self, exploration='optimistic', task_sequence='slight',
+                            metric='episode_length', better='min'):
         exp_list = self.get_experiment_list_by_hparam({
             ExperimentTaskSequenceRandomRewardChange.HP_EXPLORATION: exploration,
             ExperimentTaskSequenceRandomRewardChange.HP_TASK_SEQUENCE: task_sequence
         })
-        ep_len_list = [np.mean(exp.results['episode_length']) for exp in exp_list]
-        best_idx = np.argmin(ep_len_list)
+        ep_len_list = [np.mean(exp.results[metric]) for exp in exp_list]
+        if better == "min":
+            best_idx = np.argmin(ep_len_list)
+        else:
+            best_idx = np.argmax(ep_len_list)
         exp = exp_list[best_idx]
         for k, v in exp.hparam.items():
             print('{}: {}'.format(k, v))
