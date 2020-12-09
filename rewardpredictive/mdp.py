@@ -130,9 +130,11 @@ class FixedTerminalRewardChange(rl.environment.TabularMDP):
         def r_fn(s_1, a, s_2):
             nonlocal goal_list_idx
             if s_2 in goal_list_idx:
-                return 5.0
+                return 0.
+            elif s_2 in terminal_list_idx:
+                return -1.
             else:
-                return -0.1
+                return 0.
 
         t_mat, r_mat = generate_mdp_from_transition_and_reward_function(self.size_maze ** 2, 4, t_fn, r_fn,
                                                                         reward_matrix=True,
