@@ -130,9 +130,7 @@ class FixedTerminalRewardChange(rl.environment.TabularMDP):
         def r_fn(s_1, a, s_2):
             nonlocal goal_list_idx
             if s_2 in goal_list_idx:
-                return 0.
-            elif s_2 in terminal_list_idx:
-                return -1.
+                return 1.
             else:
                 return 0.
 
