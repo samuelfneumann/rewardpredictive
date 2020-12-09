@@ -205,7 +205,7 @@ class ExperimentTaskSequenceRandomRewardChange(ExperimentHParamParallel):
     HP_GAMMA = "gamma"
     HP_NUM_TASKS = "num_tasks"
 
-    def __init__(self, *params, base_dir="./data", **kwargs):
+    def __init__(self, *params, base_dir="./data", change_maze_per_run=False, **kwargs):
 
         """
         Experiment task sequence for our random reward change experiments.
@@ -219,6 +219,8 @@ class ExperimentTaskSequenceRandomRewardChange(ExperimentHParamParallel):
         """
         super().__init__(*params, **kwargs)
         # self.num_tasks = num_tasks
+        self.change_maze_per_run = change_maze_per_run
+        self.base_dir = base_dir
         self.task_sequence = self._get_task_sequence()
         self.num_actions = self.task_sequence[0].action_space.n
         self.save_dir = self._get_save_dir(self.hparam, base_dir)
@@ -236,9 +238,13 @@ class ExperimentTaskSequenceRandomRewardChange(ExperimentHParamParallel):
         # defaults[ExperimentTaskSequenceRandomRewardChange.HP_MDP_SIZE] = self.task_sequence[0].num_states()
         return defaults
 
-    def _get_task_sequence(self):
-        data_path = Path(ROOT_DIR, 'data', 'RandomRewardMaze')
-        file_path = data_path / 'maze.pkl'
+    def _get_task_sequence(self, index=None):
+        data_path = Path(ROOT_DIR, self.base_dir, 'RandomRewardMaze')
+        if index is not None:
+            file_path = data_path / f'maze_{index}.pkl'
+            print(f'index is {index}')
+        else:
+            file_path = data_path / 'maze.pkl'
         mdp_seq = []
 
         if not data_path.is_dir():
@@ -266,6 +272,9 @@ class ExperimentTaskSequenceRandomRewardChange(ExperimentHParamParallel):
         return mdp_seq
 
     def run_repeat(self, rep_idx: int) -> dict:
+        if self.hparam["change_maze_per_run"]:
+            self.task_sequence = self._get_task_sequence(index=rep_idx)
+
         set_seeds(12345 + rep_idx)
         episodes = self.hparam[ExperimentTaskSequenceRandomRewardChange.HP_NUM_EPISODES]
         agent = self._construct_agent()
@@ -286,7 +295,8 @@ class ExperimentTaskSequenceRandomRewardChange(ExperimentHParamParallel):
             self._reset_agent(agent)
 
         res_dict = {
-            'episode_length': np.reshape(ep_len_logger.get_episode_length(), [len(self.task_sequence), -1])
+            'episode_length': np.reshape(ep_len_logger.get_episode_length(), [len(self.task_sequence), -1]),
+            'avg_reward': np.reshape(rew_logger.get_total_reward_episodic(), [len(self.task_sequence), -1])
         }
         return res_dict
 

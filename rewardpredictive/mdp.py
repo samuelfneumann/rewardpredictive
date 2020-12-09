@@ -246,8 +246,9 @@ def test_mdps_dist(mdp_seq, dist, bound="lower"):
 if __name__ == "__main__":
     from pathlib import Path
     from definitions import ROOT_DIR
+    from tqdm import trange
 
-    random_reward_dir = Path(ROOT_DIR, 'data', 'RandomRewardMaze')
+    random_reward_dir = Path(ROOT_DIR, 'data', 'SingleChangeMaze', 'RandomRewardMaze')
 
     # lower = 3
     # print("Generating similar mdps")
@@ -260,8 +261,9 @@ if __name__ == "__main__":
 
     upper = 10
     print("Generating dissimilar mdps")
-    upper_mdp_seq = generate_l1_tasks(9, 20, upper=upper, maze_class=FixedTerminalRewardChange)
-    assert test_mdps_dist(upper_mdp_seq, upper, "upper")
-    upper_file_path = random_reward_dir / 'upper_maze.pkl'
-    with open(upper_file_path, 'wb') as f:
-        pickle.dump(upper_mdp_seq, f)
+    for i in trange(30):
+        upper_mdp_seq = generate_l1_tasks(9, 2, upper=upper, maze_class=FixedTerminalRewardChange)
+        assert test_mdps_dist(upper_mdp_seq, upper, "upper")
+        upper_file_path = random_reward_dir / f'maze_{i}.pkl'
+        with open(upper_file_path, 'wb') as f:
+            pickle.dump(upper_mdp_seq, f)

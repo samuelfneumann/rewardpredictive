@@ -8,11 +8,12 @@
     },
 	"experiment" : 
 	{
-		"repeats" : 10,
+		"repeats" : 30,
 		"epsilon" : 0.1,
 		"gamma": 0.99,
 		"episodes": 200,
 		"mdp_size": 9,
-		"num_tasks": 20
+		"num_tasks": 2,
+		"change_maze_per_run": true
 	}
 }

@@ -48,10 +48,11 @@ EXPERIMENT_SET_ALPHA_BETA_NAME_LIST = [
 
 @click.command()
 @click.option('-e', '--experiment-set', default=None, type=str, help='Experiment set to run.')
+@click.option('-d', '--base-dir', default=None, type=str, help='Experiment data directory')
 @click.option('-b', '--best', is_flag=True, help='Run only best experiment.')
 @click.option('--alpha', default=None, type=float, help='Alpha parameter.')
 @click.option('--beta', default=None, type=float, help='Beta parameter.')
-def main(experiment_set, best, alpha, beta):
+def main(experiment_set, base_dir, best, alpha, beta):
     experiment_set = experiment_set.strip()
     if alpha is not None and best:
         raise Exception('Cannot specify --alpha and run -b/--best flag at the same time.')
@@ -67,7 +68,11 @@ def main(experiment_set, best, alpha, beta):
         if experiment_set_name in EXPERIMENT_SET_ALPHA_BETA_NAME_LIST:
             es = rp.construct_experiment_set_by_name(experiment_set_name, alpha=alpha, beta=beta)
         else:
-            es = rp.construct_experiment_set_by_name(experiment_set_name)
+            if base_dir is not None:
+                es = rp.construct_experiment_set_by_name(experiment_set_name,
+                                                         base_dir=base_dir)
+            else:
+                es = rp.construct_experiment_set_by_name(experiment_set_name)
         if best:
             es.run_best(12345)
         else:
