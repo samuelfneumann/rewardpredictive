@@ -132,7 +132,7 @@ class FixedTerminalRewardChange(rl.environment.TabularMDP):
             if s_2 in goal_list_idx:
                 return 1.0
             else:
-                return -0.1
+                return 0.
 
         t_mat, r_mat = generate_mdp_from_transition_and_reward_function(self.size_maze ** 2, 4, t_fn, r_fn,
                                                                         reward_matrix=True,
@@ -250,7 +250,7 @@ if __name__ == "__main__":
 
     random_reward_dir = Path(ROOT_DIR, 'data', 'SingleChangeMaze', 'RandomRewardMaze')
 
-    # lower = 3
+    lower = 5
     # print("Generating similar mdps")
     # lower_mdp_seq = generate_l1_tasks(9, 20, lower=lower, maze_class=FixedTerminalRewardChange)
     # assert test_mdps_dist(lower_mdp_seq, lower, "lower")
@@ -260,10 +260,12 @@ if __name__ == "__main__":
     #     pickle.dump(lower_mdp_seq, f)
 
     upper = 10
-    print("Generating dissimilar mdps")
+    print("Generating similar mdps")
     for i in trange(30):
-        upper_mdp_seq = generate_l1_tasks(9, 2, upper=upper, maze_class=FixedTerminalRewardChange)
-        assert test_mdps_dist(upper_mdp_seq, upper, "upper")
+        # upper_mdp_seq = generate_l1_tasks(9, 2, upper=upper, maze_class=FixedTerminalRewardChange)
+        upper_mdp_seq = generate_l1_tasks(9, 2, lower=lower, maze_class=FixedTerminalRewardChange)
+        # assert test_mdps_dist(upper_mdp_seq, upper, "upper")
+        assert test_mdps_dist(upper_mdp_seq, lower, "lower")
         upper_file_path = random_reward_dir / f'maze_{i}.pkl'
         with open(upper_file_path, 'wb') as f:
             pickle.dump(upper_mdp_seq, f)
